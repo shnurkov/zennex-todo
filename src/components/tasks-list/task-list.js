@@ -1,18 +1,18 @@
 import React, {Component} from 'react';
 import "./style.scss";
-import tasks from "../../tasks.json";
+// import tasks from "../../tasks.json";
 
 import Task from "../task/task";
 
 export default class TaskList extends Component{
   state = {
-    tasks,
-    count: 2, //temp
-    newTaskTitle: ""
+    tasks: [],
+    newTaskTitle: "",
+    uniqueId: 0 //temp
   }
   render(){
     const taskElements = this.state.tasks.map((task) => {
-      return <li key = {task.id}><Task task = {task} /></li>
+      return <li key = {task.id}><Task task = {task} del = {this.deleteTask}  /></li>
     });
     return (
       <div className="tasks-list">
@@ -23,26 +23,33 @@ export default class TaskList extends Component{
         </div>
         <div className="tasks-list__add-field-wrap">
           <input className="tasks-list__add-field" placeholder="Type a task" type="text" value = {this.state.newTaskTitle} onChange = {this.handleChange} onKeyPress = {this.handleKeyPress}/>
-          <button className="tasks-list__add-field__btn"></button>
+          <button className="tasks-list__add-field__btn" onClick = {this.handleAddTaskBtn}></button>
         </div>
       </div>
     );
   }
+  
+  
   handleChange = (e) => {
     this.setState({newTaskTitle: e.target.value});
   }
   handleKeyPress = (e) => {
-    if(e.key === "Enter" && this.state.newTaskTitle){
+    if(e.key === "Enter"){
+      this.handleAddTaskBtn();
+    }
+  }
+  handleAddTaskBtn = () =>{
+    if(this.state.newTaskTitle){
       this.setState({newTaskTitle: ""});
       this.addNewTask();
     }
   }
   addNewTask = () => {
     let tasks = this.state.tasks;
-    let count = this.state.count;
-    count++;
+    let uniqueId = this.state.uniqueId;
+    uniqueId++;
     tasks.push({
-      id: count, 
+      id: uniqueId, 
       title: this.state.newTaskTitle,
       description: null,
       importance: null,
@@ -53,7 +60,16 @@ export default class TaskList extends Component{
       isExpired: false,
       isDone: false
     });
-    this.setState({tasks, count});
+    this.setState({tasks, uniqueId});
   }
-
+  deleteTask = (id) => {
+    let tasks = this.state.tasks;
+    for (let i = 0; i < tasks.length; i++){
+      if(tasks[i].id  === id){
+        tasks.splice(i, 1);
+        break;
+      }
+    }
+    this.setState({tasks});
+  }
 }

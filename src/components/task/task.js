@@ -10,8 +10,12 @@ export default class Task extends Component{
           <div className="task__checkbox"></div>
           <div className="task__title">{task.title}</div>
         </div>
-        <div className="task__delete"></div>
+        <div className="task__delete" onClick = {this.handleDeleteBtn}></div>
       </div>
     );
+  }
+
+  handleDeleteBtn = () => {
+    this.props.del(this.props.task.id);
   }
 }
