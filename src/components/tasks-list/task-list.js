@@ -7,12 +7,13 @@ import Task from "../task/task";
 export default class TaskList extends Component{
   state = {
     tasks: [],
+    activeTaskId: null,
     newTaskTitle: "",
     uniqueId: 0 //temp
   }
   render(){
     const taskElements = this.state.tasks.map((task) => {
-      return <li key = {task.id}><Task task = {task} del = {this.deleteTask} setDone = {this.setTaskDone} isDone = {task.isDone}/></li>
+      return <li key = {task.id}><Task task = {task} del = {this.deleteTask} setDone = {this.setTaskDone} isDone = {task.isDone} setActive = {this.setActiveTask} isActive = {this.state.activeTaskId}/></li>
     });
     return (
       <div className="tasks-list">
@@ -81,6 +82,8 @@ export default class TaskList extends Component{
       }
     }
     this.setState({tasks});
-
+  }
+  setActiveTask = (id) => {
+    this.setState({activeTaskId: id});
   }
 }
