@@ -1,5 +1,5 @@
 //Colors
-
+//https://colorscheme.ru/#3q31Tw0w0w0w0
 //Fonts
 
 //Helpers
@@ -27,3 +27,18 @@ $small: 576px;
     }
 }
 //===============================================
+*{
+    box-sizing: border-box;
+}
+body{
+    background: #F6F6F6;
+}
+
+.app{
+    max-width: 960px;
+    height: 100vh;
+    display: flex;
+    // justify-content: center;
+    margin: 0 auto;
+    align-items: center;
+}

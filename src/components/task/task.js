@@ -3,9 +3,10 @@ import "./style.scss";
 
 export default class Task extends Component{
   render(){
+    const {task} = this.props;
     return (
       <div className="task">
-        Task
+        {task.title}
       </div>
     );
   }
