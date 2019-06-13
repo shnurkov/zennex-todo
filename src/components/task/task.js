@@ -6,7 +6,11 @@ export default class Task extends Component{
     const {task} = this.props;
     return (
       <div className="task">
-        {task.title}
+        <div className="task__title-wrap">
+          <div className="task__checkbox"></div>
+          <div className="task__title">{task.title}</div>
+        </div>
+        <div className="task__delete"></div>
       </div>
     );
   }
