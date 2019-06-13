@@ -12,7 +12,7 @@ export default class TaskList extends Component{
   }
   render(){
     const taskElements = this.state.tasks.map((task) => {
-      return <li key = {task.id}><Task task = {task} del = {this.deleteTask}  /></li>
+      return <li key = {task.id}><Task task = {task} del = {this.deleteTask} setDone = {this.setTaskDone} isDone = {task.isDone}/></li>
     });
     return (
       <div className="tasks-list">
@@ -71,5 +71,16 @@ export default class TaskList extends Component{
       }
     }
     this.setState({tasks});
+  }
+  setTaskDone = (id) => {
+    let tasks = this.state.tasks;
+    for (let i = 0; i < tasks.length; i++){
+      if(tasks[i].id  === id){
+        tasks[i].isDone = !tasks[i].isDone;
+        break;
+      }
+    }
+    this.setState({tasks});
+
   }
 }

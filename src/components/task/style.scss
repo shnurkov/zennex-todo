@@ -32,4 +32,12 @@
     background-size: contain;
     cursor: pointer;
   }
+  &--done{
+    color: #eee;
+    text-decoration: line-through;
+    .task__checkbox{
+      background: url("../../assets/tick.svg") no-repeat;
+      background-size: contain;
+    }
+  }
 }
