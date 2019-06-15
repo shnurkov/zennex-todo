@@ -65,7 +65,7 @@ export default class TaskList extends Component{
         end: null,
         done: null
       },
-      isExpired: false,
+      isOverdue: false,
       isDone: false
     });
     this.setState({tasks, uniqueId, activeTaskId: uniqueId});
@@ -93,11 +93,12 @@ export default class TaskList extends Component{
   }
 
   editTask = (id, options) => {
+    // console.log(123);
     let item = this.getTaskById(id);
     let task = item.task, index = item.index;
 
-    options.title && (task.title = options.title);
-    options.description && (task.description = options.description);
+    (options.title || options.title === "") && (task.title = options.title);
+    (options.description || options.description === "") && (task.description = options.description);
     options.importance && (task.importance = options.importance);
     options.time && (task.time.end = options.time);
 

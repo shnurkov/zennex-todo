@@ -7,7 +7,8 @@ import moment from 'moment';
 
 export default class TaskDesc extends Component{
   state = {
-    date: ""
+    date: "",
+    isToday: ""
   }
 
   render(){
@@ -31,17 +32,17 @@ export default class TaskDesc extends Component{
           <div className="task-desc__row">
             <label htmlFor="importance">Importance</label>
             <Radio.Group value={task.importance} buttonStyle="solid" onChange={this.handleImportanceChange}>
-              <Radio.Button value="usual">Usual</Radio.Button>
-              <Radio.Button value="important">Important</Radio.Button>
-              <Radio.Button value="very-important">Very Important</Radio.Button>
+              <Radio.Button className="task-desc__radio--usual" value="usual">Usual</Radio.Button>
+              <Radio.Button className="task-desc__radio--important" value="important">Important</Radio.Button>
+              <Radio.Button className="task-desc__radio--very-important" value="very-important">Very Important</Radio.Button>
             </Radio.Group>
           </div>
           <div className="task-desc__row">
             <label htmlFor="date-end">Date end</label>
-            <DatePicker disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end.toDateString()): null}/>
-            <TimePicker format="HH:mm" onChange = {this.handleTimeChange}  value = {task.time.end ? moment(task.time.end.toTimeString(), "HH:mm:ss"): null}/>
+            <DatePicker disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end): null}/>
+            <TimePicker disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange}  value = {task.time.end ? moment(task.time.end.toTimeString(), "HH:mm:ss"): null}/>
           </div>
-          {this.props.task.isDone && 
+          {task.isDone && 
           <div className="task-desc__row">
             <label htmlFor="date-done">Date done</label>
             <DatePicker disabled id="date-done" format="DD.MM.YYYY" value = {task.time.done ? moment(task.time.done.toDateString()): null}/>
@@ -72,8 +73,27 @@ export default class TaskDesc extends Component{
 
 
   disabledStartDate = startValue => {
-    return startValue.valueOf() < (new Date()).valueOf() - 86400000;
+    let now = new Date();
+    now.setHours(0, 0, 0);
+    return startValue.valueOf() < now;
   };
+  disableHours = () => {
+    if(!this.state.isToday) return;
+    let hours = [];
+    for(let i =0; i < moment().hour(); i++){
+        hours.push(i);
+    }
+    return hours;
+  }
+  disableMinutes = (selectedHour) => {
+    let minutes= [];
+    if (selectedHour === moment().hour()){
+        for(let i =0; i < moment().minute(); i++){
+            minutes.push(i);
+        }
+    }
+    return minutes;
+  }
 
   handleTitleChange = (e) => {
     let val = e.target.value;
@@ -89,17 +109,28 @@ export default class TaskDesc extends Component{
   }
   handleDateChange = (date) => {
     let dateStr = date._d;
-    if(!this.state.time){
-      dateStr.setHours(0, 0, 0);
+
+    if((new Date()).toDateString() === dateStr.toDateString()){
+      this.setState({isToday: true});
+      let timeH = new Date().getHours();
+
+      if(timeH === 22) dateStr.setHours(timeH+1, 0, 0);
+      else if(timeH === 23) dateStr.setHours(23, 59, 59);
+      else dateStr.setHours(timeH+2, 0, 0);
+
+    }else{
+      this.setState({isToday: false});
+      dateStr.setHours(18, 0, 0);
     }
-    
+
     this.setState({date: dateStr});
     this.props.edit(this.props.task.id, {time: dateStr});
   }
-  handleTimeChange = (time, timeString) => {
+  handleTimeChange = (_time, timeString) => {
     let t = timeString.split(":");
     let h = t[0], m = t[1];
     let date = this.state.date ? this.state.date : new Date();
+    // console.log("change time");
     
     date.setHours(h, m);
     this.setState({date});
