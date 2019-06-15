@@ -39,10 +39,10 @@ export default class TaskDesc extends Component{
           </div>
           <div className="task-desc__row">
             <label htmlFor="date-end">Date end</label>
-            <DatePicker disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end): null}/>
-            <TimePicker disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange}  value = {this.getTimePickerVal()}/>
+            <DatePicker inputReadOnly disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end): null}/>
+            <TimePicker disabled ={!this.state.date} inputReadOnly disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange} allowClear={false}  value = {this.props.task.time.end ? moment(this.props.task.time.end, "HH:mm:ss"): null}/>
           </div>
-          {task.isDone && 
+          {task.isDone &&
           <div className="task-desc__row">
             <label htmlFor="date-done">Date done</label>
             <DatePicker disabled id="date-done" format="DD.MM.YYYY" value = {task.time.done ? moment(task.time.done.toDateString()): null}/>
@@ -58,6 +58,7 @@ export default class TaskDesc extends Component{
     );
 
   }
+
   componentDidUpdate(prevProps){
     if(this.props.task && prevProps.task && this.props.task.id !== prevProps.task.id){
       if(this.props.task.time.end){
@@ -76,7 +77,8 @@ export default class TaskDesc extends Component{
     let now = new Date();
     now.setHours(0, 0, 0);
     return startValue.valueOf() < now;
-  };
+  }
+
   disableHours = () => {
     if(!this.state.isToday) return;
     let hours = [];
@@ -85,6 +87,7 @@ export default class TaskDesc extends Component{
     }
     return hours;
   }
+
   disableMinutes = (selectedHour) => {
     let minutes= [];
     if (selectedHour === moment().hour()){
@@ -99,42 +102,56 @@ export default class TaskDesc extends Component{
     let val = e.target.value;
     this.props.edit(this.props.task.id, {title: val});
   }
+
   handleDescChange = (e) => {
     let val = e.target.value;
     this.props.edit(this.props.task.id, {description: val});
   }
+
   handleImportanceChange = (e) => {
     let val = e.target.value;
     this.props.edit(this.props.task.id, {importance: val});
   }
+
   handleDateChange = (date) => {
-    let dateStr = date._d;
+    // console.log(date)
+    // let dateStr = date ? date._d : null;
+    let dateStr = null;
+    if(date){
+      dateStr = date._d;
+    }else{
+      this.setState({date: dateStr});
+      this.props.edit(this.props.task.id, {time: dateStr});
+      console.log("time: ", this.props.task.time);
+      console.log("dateStr: ", dateStr);
+      return;
+    }
 
     if((new Date()).toDateString() === dateStr.toDateString()){
       this.setState({isToday: true});
-      let timeH = new Date().getHours();
+      let nowHour = new Date().getHours();
 
-      if(timeH === 22) dateStr.setHours(timeH+1, 0, 0);
-      else if(timeH === 23) dateStr.setHours(23, 59, 59);
-      else dateStr.setHours(timeH+2, 0, 0);
-
+      if(nowHour === 22) dateStr.setHours(nowHour+1, 0);
+      else if(nowHour === 23) dateStr.setHours(23, 59);
+      else dateStr.setHours(nowHour+2, 0, 0);
     }else{
       this.setState({isToday: false});
       dateStr.setHours(18, 0, 0);
     }
-
+    // console.log("huj");
     this.setState({date: dateStr});
     this.props.edit(this.props.task.id, {time: dateStr});
   }
+
   handleTimeChange = (_time, timeString) => {
     let t = timeString.split(":");
-    let h = t[0], m = t[1];
-    let date = this.state.date ? this.state.date : new Date();
-    // console.log("change time");
+    let h = +t[0], m = +t[1];
+
+    let date = this.state.date;
     let now = new Date();
-    // let timeProp = new Date(this.props.task.time.end);
-    if(this.state.isToday && date.getHours() === now.getHours()){
-      m = now.getMinutes()+1;
+
+    if(this.state.isToday && h === now.getHours() && m === 0){
+      m = now.getMinutes() + 1;
     }
 
     date.setHours(h, m);
@@ -142,21 +159,8 @@ export default class TaskDesc extends Component{
 
     this.props.edit(this.props.task.id, {time: date});
   }
+
   handleDeleteTask = () => {
     this.props.del(this.props.task.id);
   }
-
-  // getTimePickerVal = () => {
-  //   return this.props.task.time.end ? moment(this.props.task.time.end, "HH:mm:ss"): null;
-  // }
-  getTimePickerVal = () => {
-    if(!this.props.task.time.end) return null;
-    let now = new Date();
-    let timeProp = new Date(this.props.task.time.end);
-    if(this.state.isToday && timeProp.getHours() === now.getHours()){
-      timeProp.setMinutes(now.getMinutes()+1);
-    }
-    return moment(timeProp, "HH:mm:ss");
-  }
-
 }
