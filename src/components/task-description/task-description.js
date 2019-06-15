@@ -40,7 +40,7 @@ export default class TaskDesc extends Component{
           <div className="task-desc__row">
             <label htmlFor="date-end">Date end</label>
             <DatePicker disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end): null}/>
-            <TimePicker disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange}  value = {task.time.end ? moment(task.time.end.toTimeString(), "HH:mm:ss"): null}/>
+            <TimePicker disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange}  value = {this.getTimePickerVal()}/>
           </div>
           {task.isDone && 
           <div className="task-desc__row">
@@ -88,7 +88,7 @@ export default class TaskDesc extends Component{
   disableMinutes = (selectedHour) => {
     let minutes= [];
     if (selectedHour === moment().hour()){
-        for(let i =0; i < moment().minute(); i++){
+        for(let i =0; i < moment().minute()+1; i++){
             minutes.push(i);
         }
     }
@@ -131,7 +131,12 @@ export default class TaskDesc extends Component{
     let h = t[0], m = t[1];
     let date = this.state.date ? this.state.date : new Date();
     // console.log("change time");
-    
+    let now = new Date();
+    // let timeProp = new Date(this.props.task.time.end);
+    if(this.state.isToday && date.getHours() === now.getHours()){
+      m = now.getMinutes()+1;
+    }
+
     date.setHours(h, m);
     this.setState({date});
 
@@ -140,4 +145,18 @@ export default class TaskDesc extends Component{
   handleDeleteTask = () => {
     this.props.del(this.props.task.id);
   }
+
+  // getTimePickerVal = () => {
+  //   return this.props.task.time.end ? moment(this.props.task.time.end, "HH:mm:ss"): null;
+  // }
+  getTimePickerVal = () => {
+    if(!this.props.task.time.end) return null;
+    let now = new Date();
+    let timeProp = new Date(this.props.task.time.end);
+    if(this.state.isToday && timeProp.getHours() === now.getHours()){
+      timeProp.setMinutes(now.getMinutes()+1);
+    }
+    return moment(timeProp, "HH:mm:ss");
+  }
+
 }

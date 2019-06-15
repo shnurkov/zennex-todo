@@ -10,6 +10,7 @@ import Task from "../task/task";
 export default class TaskList extends Component{
   state = {
     tasks: [],
+    checkOverdueTimers: [], //id: timerID
     activeTaskId: null,
     newTaskTitle: "",
     uniqueId: 0 //temp
@@ -66,8 +67,11 @@ export default class TaskList extends Component{
         done: null
       },
       isOverdue: false,
-      isDone: false
+      isDone: false,
+      timer: null
     });
+
+    
     this.setState({tasks, uniqueId, activeTaskId: uniqueId});
   }
   deleteTask = (id) => {
@@ -93,7 +97,6 @@ export default class TaskList extends Component{
   }
 
   editTask = (id, options) => {
-    // console.log(123);
     let item = this.getTaskById(id);
     let task = item.task, index = item.index;
 
@@ -102,12 +105,34 @@ export default class TaskList extends Component{
     options.importance && (task.importance = options.importance);
     options.time && (task.time.end = options.time);
 
+    if(options.time){
+      task.isOverdue = false;
+      let timeToCheck = task.time.end.getTime() - (new Date()).getTime();
+      console.log("to check: ", timeToCheck);
+      if(task.timer) clearTimeout(task.timer);
+      task.timer = setTimeout(() => {
+        this.checkOverdue(id);
+      }, timeToCheck);
+    }
+
     let newTasksState = this.state.tasks.slice();
     newTasksState.splice(index, 1, task);
 
     this.setState({tasks: newTasksState});
   }
+  checkOverdue = (id) => {
+    let item = this.getTaskById(id);
+    let task = item.task, index = item.index;
+    let tasks = this.state.tasks.slice();
 
+    if(((new Date()).getTime() > task.time.end.getTime()) && !task.isDone) {
+      task.isOverdue = true;
+      console.log(task);
+      tasks.splice(index, 1, task);
+      this.setState({tasks});
+    }
+
+  }
   getTaskById = (id) => {
     let tasks = this.state.tasks;
     for (let i = 0; i < tasks.length; i++){
