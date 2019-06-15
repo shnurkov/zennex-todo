@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
+import TaskDesc from "../task-description/task-description";
+
 import "./style.scss";
+
 // import tasks from "../../tasks.json";
 
 import Task from "../task/task";
@@ -16,6 +19,7 @@ export default class TaskList extends Component{
       return <li key = {task.id}><Task task = {task} del = {this.deleteTask} setDone = {this.setTaskDone} isDone = {task.isDone} setActive = {this.setActiveTask} isActive = {this.state.activeTaskId}/></li>
     });
     return (
+      <div className="tasks-list__wrap">
       <div className="tasks-list">
         <div className="tasks-list__main">
           <ul>
@@ -26,6 +30,9 @@ export default class TaskList extends Component{
           <input className="tasks-list__add-field" placeholder="Type a task" type="text" value = {this.state.newTaskTitle} onChange = {this.handleChange} onKeyPress = {this.handleKeyPress}/>
           <button className="tasks-list__add-field__btn" onClick = {this.handleAddTaskBtn}></button>
         </div>
+
+      </div>
+        <TaskDesc task = {this.getActiveTask()} edit = {this.editTask}  del = {this.deleteTask}/>
       </div>
     );
   }
@@ -53,7 +60,7 @@ export default class TaskList extends Component{
       id: uniqueId, 
       title: this.state.newTaskTitle,
       description: null,
-      importance: null,
+      importance: "usual",
       time: {
         end: null,
         done: null
@@ -61,29 +68,55 @@ export default class TaskList extends Component{
       isExpired: false,
       isDone: false
     });
-    this.setState({tasks, uniqueId});
+    this.setState({tasks, uniqueId, activeTaskId: uniqueId});
   }
   deleteTask = (id) => {
     let tasks = this.state.tasks;
-    for (let i = 0; i < tasks.length; i++){
-      if(tasks[i].id  === id){
-        tasks.splice(i, 1);
-        break;
-      }
-    }
-    this.setState({tasks});
+    let delIndex = this.getTaskById(id).index;
+
+    tasks.splice(delIndex, 1);
+    this.setState({tasks, activeTaskId: null});
   }
   setTaskDone = (id) => {
     let tasks = this.state.tasks;
-    for (let i = 0; i < tasks.length; i++){
-      if(tasks[i].id  === id){
-        tasks[i].isDone = !tasks[i].isDone;
-        break;
-      }
-    }
+    let doneIndex = this.getTaskById(id).index;
+
+    tasks[doneIndex].isDone = !tasks[doneIndex].isDone;
+    tasks[doneIndex].time.done = new Date();
     this.setState({tasks});
   }
   setActiveTask = (id) => {
     this.setState({activeTaskId: id});
+  }
+  getActiveTask = () => {
+    return this.state.activeTaskId && this.getTaskById(this.state.activeTaskId).task;
+  }
+
+  editTask = (id, options) => {
+    let item = this.getTaskById(id);
+    let task = item.task, index = item.index;
+
+    options.title && (task.title = options.title);
+    options.description && (task.description = options.description);
+    options.importance && (task.importance = options.importance);
+    options.time && (task.time.end = options.time);
+
+    let newTasksState = this.state.tasks.slice();
+    newTasksState.splice(index, 1, task);
+
+    this.setState({tasks: newTasksState});
+  }
+
+  getTaskById = (id) => {
+    let tasks = this.state.tasks;
+    for (let i = 0; i < tasks.length; i++){
+      if(tasks[i].id  === id){
+        return {
+          task: tasks[i],
+          index: i
+        }
+      }
+    }
+
   }
 }
