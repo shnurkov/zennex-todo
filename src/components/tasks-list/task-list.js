@@ -37,9 +37,25 @@ export default class TaskList extends Component{
       </div>
     );
   }
-
-  componentDidMount() {
-
+  componentDidMount = () => {
+    let savedTasks = localStorage.getItem("tasks");
+    let uniqueId = 0;
+    if(savedTasks){
+      savedTasks = JSON.parse(savedTasks);
+      savedTasks.forEach((task) => {
+        if(task.id > uniqueId) uniqueId = task.id;
+        if(task.time.end){
+          task.time.end = new Date(task.time.end);
+          this.setTimerOverdue(task, task.id)();
+        }
+      });
+      this.setState({tasks: savedTasks, uniqueId});
+    }
+  }
+  componentDidUpdate = () => {
+    if(JSON.stringify(this.state.tasks) !== localStorage.getItem("tasks")){
+      this.saveTasks();
+    }
   }
 
   handleChange = (e) => {
@@ -99,7 +115,6 @@ export default class TaskList extends Component{
   getActiveTask = () => {
     return this.state.activeTaskId && this.getTaskById(this.state.activeTaskId).task;
   }
-
   editTask = (id, editElem) => {
     let item = this.getTaskById(id);
     let task = item.task, index = item.index;
@@ -109,18 +124,22 @@ export default class TaskList extends Component{
     editElem.importance && (task.importance = editElem.importance);
     (editElem.time ||  editElem.time === null) && (task.time.end = editElem.time);
     if(editElem.time){
-      task.isOverdue = false;
-      let timeToCheck = task.time.end.getTime() - (new Date()).getTime();
-
-      if(task.timer) clearTimeout(task.timer);
-      task.timer = setTimeout(() => {
-        this.checkOverdue(id);
-      }, timeToCheck);
+      task.timer = this.setTimerOverdue(task, id)();
     }
     let newTasksState = this.state.tasks.slice();
     newTasksState.splice(index, 1, task);
 
     this.setState({tasks: newTasksState});
+  }
+  setTimerOverdue = (task, id) => {
+    return () => {
+      task.isOverdue = false;
+      let timeToCheck = task.time.end.getTime() - (new Date()).getTime();
+      if(task.timer) clearTimeout(task.timer);
+      return setTimeout(() => {
+        this.checkOverdue(id);
+      }, timeToCheck)
+    }
   }
   checkOverdue = (id) => {
     let item = this.getTaskById(id);
@@ -136,7 +155,9 @@ export default class TaskList extends Component{
     this.setState({tasks});
 
   }
-
+  saveTasks = () => {
+    localStorage.setItem('tasks', JSON.stringify(this.state.tasks));
+  }
   getTaskById = (id) => {
     let tasks = this.state.tasks;
     for (let i = 0; i < tasks.length; i++){
