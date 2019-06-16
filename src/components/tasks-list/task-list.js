@@ -12,6 +12,7 @@ export default class TaskList extends Component{
     tasks: [],
     filterBy: "all",
     activeTaskId: null,
+    isDescOpen: true,
     newTaskTitle: "",
     uniqueId: 0
   }
@@ -23,6 +24,7 @@ export default class TaskList extends Component{
     return (
       <div className="tasks-list__wrap">
         <Filter filter = {this.filterTasks} filterBy = {this.state.filterBy}/>
+      {!this.props.isMobile || (!this.state.isDescOpen && !this.state.activeTaskId) && 
       <div className="tasks-list">
         <div className="tasks-list__main">
           <ul>
@@ -34,13 +36,14 @@ export default class TaskList extends Component{
           <button className="tasks-list__add-field__btn" onClick = {this.handleAddTaskBtn}></button>
         </div>
 
-      </div>
+      </div>}
+        {this.state.isDescOpen &&
         <TaskDesc task = {this.getActiveTask()} edit = {this.editTask}  del = {this.deleteTask}/>
+        }
       </div>
     );
   }
   componentDidMount = () => {
-
 
     let savedTasks = localStorage.getItem("tasks");
     let uniqueId = 0;
@@ -56,12 +59,15 @@ export default class TaskList extends Component{
       this.setState({tasks: savedTasks, uniqueId});
     }
   }
-  componentDidUpdate = () => {
+  componentDidUpdate = (prevProps) => {
+    if(prevProps.isMobile !== this.props.isMobile){
+      this.setState({isDescOpen: !this.props.isMobile, activeTaskId: null});
+    }
+
     if(JSON.stringify(this.state.tasks) !== localStorage.getItem("tasks")){
       this.saveTasks();
     }
   }
-
   handleChange = (e) => {
     this.setState({newTaskTitle: e.target.value});
   }
@@ -114,7 +120,11 @@ export default class TaskList extends Component{
     this.checkOverdue(id);
   }
   setActiveTask = (id) => {
-    this.setState({activeTaskId: id});
+    if(!this.isDescOpen){
+      this.setState({activeTaskId: id, isDescOpen: true});
+    }else{
+      this.setState({activeTaskId: id});
+    }
   }
   getActiveTask = () => {
     return this.state.activeTaskId && this.getTaskById(this.state.activeTaskId).task;
@@ -148,6 +158,7 @@ export default class TaskList extends Component{
   checkOverdue = (id) => {
     let item = this.getTaskById(id);
     let task = item.task, index = item.index;
+    if(!task.time.end) return;
     let tasks = this.state.tasks.slice();
 
     if(((new Date()).getTime() > task.time.end.getTime()) && !task.isDone) {
