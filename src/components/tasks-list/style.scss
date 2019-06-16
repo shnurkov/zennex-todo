@@ -10,6 +10,7 @@
   &__wrap{
     display: flex;
     flex: 1;
+    flex-wrap: wrap;
   }
   &__main{
     padding: 10px 15px;

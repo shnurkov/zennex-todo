@@ -1,0 +1,8 @@
+.filter{
+  width: 100%;
+  height: 50px;
+  padding: 0 15px;
+  label:not(.ant-radio-button-wrapper){
+    margin-right: 15px;
+  }
+}

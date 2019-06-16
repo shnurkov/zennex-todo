@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import TaskDesc from "../task-description/task-description";
-
+import Filter from "../filter/filter";
 import "./style.scss";
 
 // import tasks from "../../tasks.json";
@@ -10,17 +10,19 @@ import Task from "../task/task";
 export default class TaskList extends Component{
   state = {
     tasks: [],
-    checkOverdueTimers: [], //id: timerID
+    filterBy: "all",
     activeTaskId: null,
     newTaskTitle: "",
-    uniqueId: 0 //temp
+    uniqueId: 0
   }
   render(){
-    const taskElements = this.state.tasks.map((task) => {
+    const filteredElements = this.state.tasks.filter(task => task.importance === this.state.filterBy || this.state.filterBy === "all");
+    const taskElements = filteredElements.map((task) => {
       return <li key = {task.id}><Task task = {task} del = {this.deleteTask} setDone = {this.setTaskDone} isDone = {task.isDone} setActive = {this.setActiveTask} isActive = {this.state.activeTaskId}/></li>
     });
     return (
       <div className="tasks-list__wrap">
+        <Filter filter = {this.filterTasks} filterBy = {this.state.filterBy}/>
       <div className="tasks-list">
         <div className="tasks-list__main">
           <ul>
@@ -38,6 +40,8 @@ export default class TaskList extends Component{
     );
   }
   componentDidMount = () => {
+
+
     let savedTasks = localStorage.getItem("tasks");
     let uniqueId = 0;
     if(savedTasks){
@@ -46,7 +50,7 @@ export default class TaskList extends Component{
         if(task.id > uniqueId) uniqueId = task.id;
         if(task.time.end){
           task.time.end = new Date(task.time.end);
-          this.setTimerOverdue(task, task.id)();
+          task.timer = this.setTimerOverdue(task, task.id)();
         }
       });
       this.setState({tasks: savedTasks, uniqueId});
@@ -91,7 +95,7 @@ export default class TaskList extends Component{
     });
 
 
-    this.setState({tasks, uniqueId, activeTaskId: uniqueId});
+    this.setState({tasks, uniqueId, activeTaskId: uniqueId, filterBy: "all"});
   }
   deleteTask = (id) => {
     let tasks = this.state.tasks;
@@ -158,6 +162,9 @@ export default class TaskList extends Component{
   saveTasks = () => {
     localStorage.setItem('tasks', JSON.stringify(this.state.tasks));
   }
+  filterTasks = (filterBy) => {
+    this.setState({filterBy})
+  }
   getTaskById = (id) => {
     let tasks = this.state.tasks;
     for (let i = 0; i < tasks.length; i++){
@@ -168,6 +175,5 @@ export default class TaskList extends Component{
         }
       }
     }
-
   }
 }
