@@ -1,12 +1,4 @@
-//Colors
-$blue: #066CD9;
-$yellow: #E0A800;
-$red: #C82333;
-
-//Fonts
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
-//Helpers
-$url: '../../assets/';
 
 //Screen size
 $large: 1200px;
@@ -29,7 +21,6 @@ $small: 576px;
         @content;
     }
 }
-//===============================================
 *{
     box-sizing: border-box;
 }
@@ -42,7 +33,7 @@ body{
     max-width: 960px;
     height: 100vh;
     display: flex;
-    // justify-content: center;
     margin: 0 auto;
     align-items: center;
+    padding: 15px;
 }
