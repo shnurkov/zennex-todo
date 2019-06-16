@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-// import TaskDesc from "../task-description/task-description";
+import TaskDesc from "../task-description/task-description";
 import Filter from "../filter/filter";
 import "./style.scss";
 
@@ -35,7 +35,7 @@ export default class TaskList extends Component{
         </div>
 
       </div>
-        {/* <TaskDesc task = {this.getActiveTask()} edit = {this.editTask}  del = {this.deleteTask}/> */}
+        <TaskDesc task = {this.getActiveTask()} edit = {this.editTask}  del = {this.deleteTask}/>
       </div>
     );
   }

@@ -1,26 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
-//Screen size
-$large: 1200px;
-$medium: 768px;
-$small: 576px;
-
-//Screen
-@mixin large{
-    @media (max-width: $large){ //992px
-        @content;
-    }
-}
-@mixin medium{
-    @media (max-width: $medium){ //768px
-        @content;
-    }
-}
-@mixin small{
-    @media (max-width: $small){ //576px
-        @content;
-    }
-}
 *{
     box-sizing: border-box;
 }

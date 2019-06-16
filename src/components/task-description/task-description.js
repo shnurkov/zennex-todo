@@ -37,16 +37,20 @@ export default class TaskDesc extends Component{
               <Radio.Button className="task-desc__radio--very-important" value="very-important">Very Important</Radio.Button>
             </Radio.Group>
           </div>
-          <div className="task-desc__row">
+          <div className="task-desc__row task-desc__date-end">
             <label htmlFor="date-end">Date end</label>
-            <DatePicker inputReadOnly disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end): null}/>
-            <TimePicker disabled ={!this.state.date} inputReadOnly disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange} allowClear={false}  value = {this.props.task.time.end ? moment(this.props.task.time.end, "HH:mm:ss"): null}/>
+            <div className="task-desc__pickers-wrap">
+              <DatePicker className="task-desc__date-end__datepicker" inputReadOnly disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end): null}/>
+              <TimePicker className="task-desc__date-end__datepicker" disabled ={!this.state.date} inputReadOnly disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange} allowClear={false}  value = {this.props.task.time.end ? moment(this.props.task.time.end, "HH:mm:ss"): null}/>
+            </div>
           </div>
           {task.isDone &&
-          <div className="task-desc__row">
+          <div className="task-desc__row task-desc__date-done">
             <label htmlFor="date-done">Date done</label>
-            <DatePicker disabled id="date-done" format="DD.MM.YYYY" value = {task.time.done ? moment(task.time.done): null}/>
-            <TimePicker disabled format="HH:mm" value = {task.time.done ? moment(task.time.done, "HH:mm:ss"): null}/>
+            <div className="task-desc__pickers-wrap">
+              <DatePicker className="task-desc__date-done__datepicker" disabled id="date-done" format="DD.MM.YYYY" value = {task.time.done ? moment(task.time.done): null}/>
+              <TimePicker className="task-desc__date-done__timepicker" disabled format="HH:mm" value = {task.time.done ? moment(task.time.done, "HH:mm:ss"): null}/>
+            </div>
           </div>}
           <div className="task-desc__delete-btn">
           <Button type="danger" block onClick ={this.handleDeleteTask}>
