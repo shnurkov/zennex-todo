@@ -45,8 +45,8 @@ export default class TaskDesc extends Component{
           {task.isDone &&
           <div className="task-desc__row">
             <label htmlFor="date-done">Date done</label>
-            <DatePicker disabled id="date-done" format="DD.MM.YYYY" value = {task.time.done ? moment(task.time.done.toDateString()): null}/>
-            <TimePicker disabled format="HH:mm" value = {task.time.done ? moment(task.time.done.toTimeString(), "HH:mm:ss"): null}/>
+            <DatePicker disabled id="date-done" format="DD.MM.YYYY" value = {task.time.done ? moment(task.time.done): null}/>
+            <TimePicker disabled format="HH:mm" value = {task.time.done ? moment(task.time.done, "HH:mm:ss"): null}/>
           </div>}
           <div className="task-desc__delete-btn">
           <Button type="danger" block onClick ={this.handleDeleteTask}>
@@ -114,16 +114,12 @@ export default class TaskDesc extends Component{
   }
 
   handleDateChange = (date) => {
-    // console.log(date)
-    // let dateStr = date ? date._d : null;
     let dateStr = null;
     if(date){
       dateStr = date._d;
     }else{
       this.setState({date: dateStr});
       this.props.edit(this.props.task.id, {time: dateStr});
-      console.log("time: ", this.props.task.time);
-      console.log("dateStr: ", dateStr);
       return;
     }
 
@@ -138,7 +134,6 @@ export default class TaskDesc extends Component{
       this.setState({isToday: false});
       dateStr.setHours(18, 0, 0);
     }
-    // console.log("huj");
     this.setState({date: dateStr});
     this.props.edit(this.props.task.id, {time: dateStr});
   }
