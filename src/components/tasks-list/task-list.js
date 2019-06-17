@@ -148,6 +148,7 @@ export default class TaskList extends Component{
     return () => {
       task.isOverdue = false;
       let timeToCheck = task.time.end.getTime() - (new Date()).getTime();
+      console.log(task.title, Math.ceil(timeToCheck/1000));
       if(task.timer) clearTimeout(task.timer);
       return setTimeout(() => {
         this.checkOverdue(id);

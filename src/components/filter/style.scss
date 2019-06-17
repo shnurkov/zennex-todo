@@ -8,9 +8,6 @@
   width: 100%;
   margin-bottom: 15px;
   padding: 0 15px;
-  @include mobile{
-    padding: 0;
-  }
   label:not(.ant-radio-button-wrapper){
     margin-right: 15px;
     @include mobile{

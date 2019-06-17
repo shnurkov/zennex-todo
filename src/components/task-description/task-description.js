@@ -41,7 +41,7 @@ export default class TaskDesc extends Component{
             <label htmlFor="date-end">Date end</label>
             <div className="task-desc__pickers-wrap">
               <DatePicker className="task-desc__date-end__datepicker" inputReadOnly disabledDate={this.disabledStartDate} id="date-end" format="DD.MM.YYYY" onChange={this.handleDateChange} value = {task.time.end ? moment(task.time.end): null}/>
-              <TimePicker className="task-desc__date-end__datepicker" disabled ={!this.state.date} inputReadOnly disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange} allowClear={false}  value = {this.props.task.time.end ? moment(this.props.task.time.end, "HH:mm:ss"): null}/>
+              <TimePicker className="task-desc__date-end__datepicker" disabled ={!this.props.task.time.end} inputReadOnly disabledHours={this.disableHours} disabledMinutes={this.disableMinutes} format="HH:mm" onChange = {this.handleTimeChange} allowClear={false}  value = {this.props.task.time.end ? moment(this.props.task.time.end, "HH:mm:ss"): null}/>
             </div>
           </div>
           {task.isDone &&
@@ -65,7 +65,7 @@ export default class TaskDesc extends Component{
     );
 
   }
-
+  
   componentDidUpdate(prevProps){
     if(this.props.task && prevProps.task && this.props.task.id !== prevProps.task.id){
       if(this.props.task.time.end){
