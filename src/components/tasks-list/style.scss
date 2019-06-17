@@ -1,3 +1,8 @@
+@mixin mobile{
+  @media (max-width: 630px){
+      @content;
+  }
+}
 .tasks-list{
   flex: 1;
   height: 430px;
@@ -12,6 +17,10 @@
     flex: 1;
     flex-wrap: wrap;
     position: relative;
+    @include mobile{
+      padding: 0 15px;
+    }
+  
   }
   &__main{
     padding: 10px 15px;
