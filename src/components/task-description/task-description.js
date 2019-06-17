@@ -53,7 +53,10 @@ export default class TaskDesc extends Component{
             </div>
           </div>}
           <div className="task-desc__delete-btn">
-          <Button type="danger" block onClick ={this.handleDeleteTask}>
+          <Button type="primary" onClick ={this.handleCloseDesc}>
+            Ok
+          </Button>
+          <Button type="danger" onClick ={this.handleDeleteTask}>
             Delete
           </Button>
           </div>
@@ -161,5 +164,8 @@ export default class TaskDesc extends Component{
 
   handleDeleteTask = () => {
     this.props.del(this.props.task.id);
+  }
+  handleCloseDesc = () => {
+    this.props.close();
   }
 }

@@ -9,10 +9,10 @@ import Task from "../task/task";
 
 export default class TaskList extends Component{
   state = {
+    isMobile: false,
     tasks: [],
     filterBy: "all",
     activeTaskId: null,
-    isDescOpen: true,
     newTaskTitle: "",
     uniqueId: 0
   }
@@ -24,7 +24,7 @@ export default class TaskList extends Component{
     return (
       <div className="tasks-list__wrap">
         <Filter filter = {this.filterTasks} filterBy = {this.state.filterBy}/>
-      {!this.props.isMobile || (!this.state.isDescOpen && !this.state.activeTaskId) && 
+      
       <div className="tasks-list">
         <div className="tasks-list__main">
           <ul>
@@ -36,10 +36,10 @@ export default class TaskList extends Component{
           <button className="tasks-list__add-field__btn" onClick = {this.handleAddTaskBtn}></button>
         </div>
 
-      </div>}
-        {this.state.isDescOpen &&
-        <TaskDesc task = {this.getActiveTask()} edit = {this.editTask}  del = {this.deleteTask}/>
-        }
+      </div>
+        {/* {!this.state.isMobile && */}
+        <TaskDesc task = {this.getActiveTask()} edit = {this.editTask}  del = {this.deleteTask} close = {this.closeDesc}/>
+        {/* } */}
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default class TaskList extends Component{
   }
   componentDidUpdate = (prevProps) => {
     if(prevProps.isMobile !== this.props.isMobile){
-      this.setState({isDescOpen: !this.props.isMobile, activeTaskId: null});
+      this.setState({isMobile: this.props.isMobile});
     }
 
     if(JSON.stringify(this.state.tasks) !== localStorage.getItem("tasks")){
@@ -100,8 +100,11 @@ export default class TaskList extends Component{
       timer: null
     });
 
-
-    this.setState({tasks, uniqueId, activeTaskId: uniqueId, filterBy: "all"});
+    if(!this.state.isMobile){
+      this.setState({tasks, uniqueId, activeTaskId: uniqueId, filterBy: "all"});
+    }else{
+      this.setState({tasks, uniqueId, filterBy: "all"});
+    }
   }
   deleteTask = (id) => {
     let tasks = this.state.tasks;
@@ -120,11 +123,7 @@ export default class TaskList extends Component{
     this.checkOverdue(id);
   }
   setActiveTask = (id) => {
-    if(!this.isDescOpen){
-      this.setState({activeTaskId: id, isDescOpen: true});
-    }else{
-      this.setState({activeTaskId: id});
-    }
+    this.setState({activeTaskId: id});
   }
   getActiveTask = () => {
     return this.state.activeTaskId && this.getTaskById(this.state.activeTaskId).task;
@@ -174,7 +173,10 @@ export default class TaskList extends Component{
     localStorage.setItem('tasks', JSON.stringify(this.state.tasks));
   }
   filterTasks = (filterBy) => {
-    this.setState({filterBy})
+    this.setState({filterBy});
+  }
+  closeDesc = () => {
+    this.setState({activeTaskId: null});
   }
   getTaskById = (id) => {
     let tasks = this.state.tasks;
