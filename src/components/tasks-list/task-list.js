@@ -3,8 +3,6 @@ import TaskDesc from "../task-description/task-description";
 import Filter from "../filter/filter";
 import "./style.scss";
 
-// import tasks from "../../tasks.json";
-
 import Task from "../task/task";
 
 export default class TaskList extends Component{
@@ -37,9 +35,7 @@ export default class TaskList extends Component{
         </div>
 
       </div>
-        {/* {!this.state.isMobile && */}
         <TaskDesc task = {this.getActiveTask()} edit = {this.editTask}  del = {this.deleteTask} close = {this.closeDesc}/>
-        {/* } */}
       </div>
     );
   }
@@ -148,7 +144,6 @@ export default class TaskList extends Component{
     return () => {
       task.isOverdue = false;
       let timeToCheck = task.time.end.getTime() - (new Date()).getTime();
-      console.log(task.title, Math.ceil(timeToCheck/1000));
       if(task.timer) clearTimeout(task.timer);
       return setTimeout(() => {
         this.checkOverdue(id);
